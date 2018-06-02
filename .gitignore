@@ -1,0 +1,15 @@
+*.pyc
+*.bak
+*.*~
+*.log
+*.swp
+#*.table
+#*.sqlite
+cache/*
+errors/*
+sessions/*
+#uploads/*
+#databases/*
+#private/*
+.vscode/
+

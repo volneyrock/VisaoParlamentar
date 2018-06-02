@@ -1,0 +1,23 @@
+{{extend 'top-nav.html'}}
+
+<div class="row">
+  {{for p in projects:}}
+  <div class="col-sm-12 col-md-3">
+      <div class="box box-default">
+          <div class="box-header with-border">
+            <h3 class="box-title">{{=p.name}}</h3>        
+          </div>
+          <!-- /.box-header -->
+          <div class="box-body">
+              <p>{{=p.title}}</p>
+              <a class="btn btn-info" href="{{=URL('default', 'proj_detail', args=p.id)}}">{{=T('Details')}}</a>
+              <!-- <span class="pull-right text-muted">127 votos - 3 comments</span>  -->
+          </div>
+          <!-- /.box-body -->
+        </div>   
+  </div>  
+  {{pass}}
+</div>
+
+
+

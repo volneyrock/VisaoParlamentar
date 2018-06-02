@@ -1,0 +1,120 @@
+{{extend 'top-nav.html'}}
+
+
+<div class="row">
+    <div class="col-sm-12 col-md-12">
+        <div class="box box-widget">
+            <div class="box-header with-border">
+                <div class="user-block">
+                    <!-- <img class="img-circle" src="{{=URL('static', 'images/beaker.jpg')}}" alt="User Image"> -->
+                    <span class="username">
+                        <h4>{{=projData.name}}</h4>
+                    </span>
+                    <span class="username">
+                        <h5>{{=projData.title}}</h5>
+                    </span>
+                    <span class="description">Autor: {{=projData.parliamentary.name}} - {{=projData.parliamentary.party}} | Data de apresentação: {{=projData.presentation_date.strftime("%d/%m/%Y")}}</span>
+                </div>
+                <!-- /.user-block -->                
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+                <p>{{=XML(projData.description)}}</p>
+                <p>Projeto original: <a href="{{=projData.original}}" target="_blank">{{=projData.original}}</a></p>
+                {{if you_vote:}}
+                    {{if you_vote.vote == True:}}
+                    <a href="{{=URL('default', 'neutral_vote', args=[you_vote.id, projData.id])}}" class="btn btn-success">Você votou Sim</a>
+                    {{elif you_vote.vote == False:}}
+                    <a href="{{=URL('default', 'neutral_vote', args=[you_vote.id, projData.id])}}" class="btn btn-danger">Você votou Não</a>
+                    {{pass}}                
+                {{else:}}
+                    <a href="{{=URL('default', 'yes_vote', args=projData.id)}}" class="btn btn-success">Votar Sim</a>
+                    <a href="{{=URL('default', 'no_vote', args=projData.id)}}" class="btn btn-danger">Votar Não</a>
+                {{pass}}                
+                <!-- <span class="pull-right text-muted"></span> -->
+            </div>
+            <!-- /.box-body -->           
+        </div>
+        <!-- /.box -->
+    </div>
+</div>
+
+<!-- DONUT CHART -->
+<div class="box box-widget">
+    <div class="box-header with-border">
+        <h3 class="box-title">Votos:</h3>
+        <div class="box-tools pull-right">
+            <p class="text-muted">Votos Sim: {{=y_vote}}  |  Votos Não: {{=n_vote}}</p>
+        </div>
+    </div>
+    <div class="box-body">
+        {{if y_vote or n_vote >= 1:}}
+        <canvas id="pieChart" style="height:250px"></canvas>
+        {{else:}}
+        <p>{{=T('No vote for this project')}}</p>
+        {{pass}} 
+    </div>
+    <!-- /.box-body -->
+</div>
+<!-- /.box -->      
+
+{{block page_js}}
+<!-- ChartJS -->
+<script src="{{=URL('static', 'adminLTE/bower_components/chart.js/Chart.js')}}"></script>
+<script>
+    $(function(){
+        /* ChartJS
+        * -------
+        * Here we will create a few charts using ChartJS
+        */
+        //-------------
+        //- PIE CHART -
+        //-------------
+        // Get context with jQuery - using jQuery's .get() method.
+        var pieChartCanvas = $('#pieChart').get(0).getContext('2d')
+        var pieChart       = new Chart(pieChartCanvas)
+        var PieData        = [
+        {
+            value    : {{=n_vote}},
+            color    : '#f56954',
+            highlight: '#f56954',
+            label    : 'Votos Não'
+        },
+        {
+            value    : {{=y_vote}},
+            color    : '#00a65a',
+            highlight: '#00a65a',
+            label    : 'Votos Sim'
+        },       
+        ]
+        var pieOptions     = {
+        //Boolean - Whether we should show a stroke on each segment
+        segmentShowStroke    : true,
+        //String - The colour of each segment stroke
+        segmentStrokeColor   : '#fff',
+        //Number - The width of each segment stroke
+        segmentStrokeWidth   : 2,
+        //Number - The percentage of the chart that we cut out of the middle
+        percentageInnerCutout: 50, // This is 0 for Pie charts
+        //Number - Amount of animation steps
+        animationSteps       : 100,
+        //String - Animation easing effect
+        animationEasing      : 'easeOutBounce',
+        //Boolean - Whether we animate the rotation of the Doughnut
+        animateRotate        : true,
+        //Boolean - Whether we animate scaling the Doughnut from the centre
+        animateScale         : false,
+        //Boolean - whether to make the chart responsive to window resizing
+        responsive           : true,
+        // Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
+        maintainAspectRatio  : true,
+        //String - A legend template
+        legendTemplate       : '<ul class="<%=name.toLowerCase()%>-legend"><% for (var i=0; i<segments.length; i++){%><li><span style="background-color:<%=segments[i].fillColor%>"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>'
+        }
+        //Create pie or douhnut chart
+        // You can switch between pie and douhnut using the method below.
+        pieChart.Doughnut(PieData, pieOptions)
+        })
+</script>
+{{end page_js}}
+
